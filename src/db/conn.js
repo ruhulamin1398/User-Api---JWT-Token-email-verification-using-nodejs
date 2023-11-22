@@ -1,26 +1,24 @@
+const mongoose = require('mongoose');
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://ruhulamin010398:25XLmIYd4ygng027@cluster0.pqvspyo.mongodb.net/?retryWrites=true&w=majority";
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
+const uri = "mongodb+srv://ruhulamin010398:25XLmIYd4ygng027@cluster0.pqvspyo.mongodb.net/doctor-appoinment?retryWrites=true&w=majority";
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // Connect to MongoDB using Mongoose
+    await mongoose.connect(uri);
+
+    // Confirm a successful connection by checking the readyState
+    if (mongoose.connection.readyState === 1) {
+      console.log("Connected to MongoDB!");
+    } else {
+      console.log("Unable to connect to MongoDB");
+    }
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error.message);
   } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
+    // Close the Mongoose connection when done
+    // await mongoose.connection.close();
   }
 }
-run().catch(console.dir);
+
+run();
