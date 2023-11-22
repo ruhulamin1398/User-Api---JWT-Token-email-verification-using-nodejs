@@ -5,14 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start" : "node src/app.js",
-    "dev" : "nodemon src/app.js"
-
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "mongodb": "^6.3.0",
     "mongoose": "^8.0.1"
   }
 }
