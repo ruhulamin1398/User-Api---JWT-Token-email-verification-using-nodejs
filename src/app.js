@@ -17,6 +17,12 @@ const contactRoutes = require("./routers/contactRoutes");
 // Middleware to parse JSON in the request body
 app.use(express.json());
 
+app.get('/', (req, res) => {
+    res.send('Hello, this is your first route!');
+  });
+
+  
+
 // Use the user routecontra
 app.use('/api/v1/users', userRoute);
 
