@@ -5,6 +5,11 @@ require("./db/conn")
 const errorHandler = require("./middleware/errorHandler");
 
 
+// const listEndpoints = require('express-list-endpoints');
+
+
+
+
 const userRoute = require("./routers/userRoutes");
 const contactRoutes = require("./routers/contactRoutes");
 
@@ -12,10 +17,14 @@ const contactRoutes = require("./routers/contactRoutes");
 // Middleware to parse JSON in the request body
 app.use(express.json());
 
-// Use the user route
+// Use the user routecontra
 app.use('/api/v1/users', userRoute);
 
 app.use('/api/v1/contacts', contactRoutes);
+
+
+// console.log(listEndpoints(app));
+
 
 
 app.use(errorHandler);

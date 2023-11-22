@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler")
 const User = require("../models/userModel")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const nodemailer = require("nodemailer")
 
 
 //@desc Register a user 
@@ -42,6 +43,7 @@ const registerUser = asyncHandler(async (req, res) => {
             _email: user.email,
             username :  user.username
         })
+       const isSendMail=  await sentVerifyMail(user.username, user.email, user._id )
     }
     else {
         res.status(400)
@@ -93,6 +95,50 @@ const currentUser= asyncHandler( async(req,res) =>{
     console.log("status ")
     res.json(req.user)
 
+})
+
+
+// verify Account via code 
+const verifyEmail = asyncHandler(async (req,res){
+    res.json({
+        "message" : "hello"
+    })
+    ///
+})
+
+// send verify email 
+const sentVerifyMail = asyncHandler(async (name , email, user_id) => {
+   const tranporter =  nodemailer.createTransport({
+        host:process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        secure: false,
+        auth:{
+            user:process.env.SMTP_USER,
+            pass:process.env.SMTP_PASSWORD
+        }
+    })
+    console.log(tranporter)
+    const emailBodyHtml = `
+    <h1> Verification Email</h1>
+    <p>  click here to verfy     </p><br>
+    <a href="${process.env.HOST}/verify?id=${user_id}"> Click here </a>
+    `
+ 0 
+
+    const mailOptions={
+        from : process.env.SMTP_USER,
+        to:email,
+        subject: "Verification Email",
+        html:emailBodyHtml
+    }
+    tranporter.sendMail(mailOptions,function(err,info){
+        if(err){
+            console.log(err)
+        }
+        else{
+            console.log("email has been send", info.response )
+        }
+    })
 })
 
 
