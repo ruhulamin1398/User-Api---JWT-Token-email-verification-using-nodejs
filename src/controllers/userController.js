@@ -75,10 +75,7 @@ const loginUser= asyncHandler( async(req,res) =>{
             },  
         },
         process.env.ACCESS_TOKEN_SECRT,
-        
         {expiresIn : "1000m"},
-        
-        
         )
         res.status(200)
         res.json({accessToken})
@@ -94,7 +91,7 @@ const loginUser= asyncHandler( async(req,res) =>{
 const currentUser= asyncHandler( async(req,res) =>{
     res.status(200)
     console.log("status ")
-    res.json({"accessToken" : "hi "})
+    res.json(req.user)
 
 })
 
