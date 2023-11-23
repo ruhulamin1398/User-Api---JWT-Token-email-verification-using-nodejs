@@ -28,9 +28,7 @@ const registerUser = asyncHandler(async (req, res) => {
     
     // Hash Password 
     const hashedPassword = await bcrypt.hash(password,10)
-    console.log("hashed Password is ", password, " - ", hashedPassword)
-
-
+  
     const user = await User.create({
         username, 
         email, 
@@ -38,21 +36,22 @@ const registerUser = asyncHandler(async (req, res) => {
     })
     if(user){
         res.status(201);
+        // res.json({
+        //     _id: user.id , 
+        //     _email: user.email,
+        //     username :  user.username
+        // })
         res.json({
-            _id: user.id , 
-            _email: user.email,
-            username :  user.username
+            "msg": "Account Created Successful. Please verify your Email"
         })
+
     //    const isSendMail=  await sentVerifyMail(user.username, user.email, user._id )
     }
     else {
         res.status(400)
         throw new Error ("user data is not valid ")
     }
-
- res.json({
-    message : "Register user"
- })
+ 
 }
 )
 
@@ -80,7 +79,11 @@ const loginUser= asyncHandler( async(req,res) =>{
         {expiresIn : "1000m"},
         )
         res.status(200)
-        res.json({accessToken})
+        res.json({
+            
+            "msg": "login Successfull",
+            "token": accessToken,
+        })
     }
     else{
         res.status(401);
