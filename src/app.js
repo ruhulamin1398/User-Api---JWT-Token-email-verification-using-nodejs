@@ -4,22 +4,16 @@ const app = express();
 require("./db/conn")
 const errorHandler = require("./middleware/errorHandler");
 
-
 // const listEndpoints = require('express-list-endpoints');
 
-
-
-
 const userRoute = require("./routers/userRoutes");
-const contactRoutes = require("./routers/contactRoutes");
+const contactRoutes = require("./routers/contactRoutes"); 
 
 
 // Middleware to parse JSON in the request body
 app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.send('Hello, this is your first route!');
-  });
+
 
   
 

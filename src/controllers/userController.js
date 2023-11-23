@@ -107,49 +107,54 @@ const currentUser= asyncHandler( async(req,res) =>{
 // })
 
 // // send verify email 
-// const sentVerifyMail = asyncHandler(async (name , email, user_id) => {
-//    const tranporter =  nodemailer.createTransport({
-//         host:process.env.SMTP_HOST,
-//         port: process.env.SMTP_PORT,
-//         secure: false,
-//         auth:{
-//             user:process.env.SMTP_USER,
-//             pass:process.env.SMTP_PASSWORD
-//         }
-//     })
-//     console.log(tranporter)
-//     const emailBodyHtml = `
-//     <h1> Verification Email</h1>
-//     <p>  click here to verfy     </p><br>
-//     <a href="${process.env.HOST}/verify?id=${user_id}"> Click here </a>
-//     `
+const sentVerifyMail = asyncHandler(async () => {
+
+   const  name  = "ruhul";
+   const email = "ruhul.ok@gmail.com";
+   const  user_id = "4154564156"
+   const tranporter =  nodemailer.createTransport({
+        service: 'gmail',
+        // host:process.env.SMTP_HOST,
+        // port: process.env.SMTP_PORT,
+        // secure: false,
+        auth:{
+            user:process.env.SMTP_USER,
+            pass:process.env.SMTP_PASSWORD,
+        }
+    })
+    console.log(tranporter)
+    const emailBodyHtml = `
+    <h1> Verification Email</h1>
+    <p>  click here to verfy     </p><br>
+    <a href="${process.env.HOST}/verify?id=${user_id}"> Click here </a>
+    `
 
 
-//     const mailOptions={
-//         from : process.env.SMTP_USER,
-//         to:email,
-//         subject: "Verification Email",
-//         html:emailBodyHtml
-//     }
-//     tranporter.sendMail(mailOptions,function(err,info){
-//         if(err){
-//             console.log(err)
-//         }
-//         else{
-//             console.log("email has been send", info.response )
-//         }
-//     })
-// })
-
-
-
-
-
-
-
-
+    const mailOptions={
+        from : process.env.SMTP_USER,
+        to:email,
+        subject: "Verification Email",
+        html:emailBodyHtml
+    }
+    tranporter.sendMail(mailOptions,function(err,info){
+        if(err){
+            console.log(err)
+        }
+        else{
+            console.log("email has been send", info.response )
+        }
+    })
+})
 
 
 
 
-module.exports = { registerUser,loginUser,currentUser };
+
+
+
+
+
+
+
+
+module.exports = { registerUser,loginUser,currentUser,sentVerifyMail };
