@@ -4,16 +4,27 @@ const app = express();
 require("./db/conn")
 const errorHandler = require("./middleware/errorHandler");
 
+
 // const listEndpoints = require('express-list-endpoints');
+
+
+
 
 const userRoute = require("./routers/userRoutes");
 const contactRoutes = require("./routers/contactRoutes"); 
+const AsyncHandler = require("express-async-handler");
+const User = require("./models/userModel");
 
 
 // Middleware to parse JSON in the request body
 app.use(express.json());
 
+app.get('/hi', AsyncHandler(async(req,res)=>{
+  // Update all existing documents to include the new fields
+ await User.updateMany({}, { $set: { is_verified: false, verification_code: 0 } });
+ res.json({ "msg" : "done"})
 
+}));
 
   
 
