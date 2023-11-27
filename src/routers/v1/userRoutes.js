@@ -16,7 +16,7 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 
 router.get("/current", validateToken, currentUser);
-router.post("/send-verification-email", validateToken, sendVerificationOTP);
+router.get("/resend-verification-email", validateToken, sendVerificationOTP);
 router.get("/verify-otp-token", validateToken, validateUserOTP);
 
 module.exports = router;

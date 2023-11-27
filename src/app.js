@@ -25,6 +25,16 @@ app.get('/hi', AsyncHandler(async(req,res)=>{
  res.json({ "msg" : "done"})
 
 }));
+// for no production only , please remove before deploy
+app.get('/clean-data', AsyncHandler(async(req,res)=>{
+   
+  
+  const prevUser = await User.find({});
+  await User.deleteMany({});
+  const users = await User.find({});
+ res.json({ "msg" : "All users was deleted ", "users": users })
+
+}));
 
   
 
