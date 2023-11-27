@@ -14,6 +14,7 @@ const userRoute = require("./routers/v1/userRoutes");
 const contactRoutes = require("./routers/v1/contactRoutes"); 
 const AsyncHandler = require("express-async-handler");
 const User = require("./models/userModel");
+const VerificationCode  = require("./models/verificationCodeModel");
 
 
 // Middleware to parse JSON in the request body
@@ -28,10 +29,11 @@ app.get('/hi', AsyncHandler(async(req,res)=>{
 // for no production only , please remove before deploy
 app.get('/clean-data', AsyncHandler(async(req,res)=>{
   
-  const prevUser = await User.find({});
+  
   await User.deleteMany({});
-  const users = await User.find({});
- res.json({ "msg" : "All users was deleted ", "users": users, "prevUser":prevUser })
+  await VerificationCode.deleteMany({})
+   
+ res.json({ "msg" : "All data was deleted " })
 
 }));
 
