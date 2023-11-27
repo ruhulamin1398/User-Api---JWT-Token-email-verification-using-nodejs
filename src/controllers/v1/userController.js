@@ -37,8 +37,17 @@ const registerUser = asyncHandler(async (req, res) => {
     if (user) {
 
         const isSentVerifyMail = await sentVerifyMail(user.id)
+        const data = {
+            type: "user"
+        }
 
-        const accessToken = await generateJwtToken(user.username, user.email, user._id, 0, {})
+        const accessToken = await generateJwtToken(user.username, user.email, user._id, 0, data);
+
+        await User.findByIdAndUpdate(
+            user.id,
+            { token: accessToken },
+            { new: true }
+        );
 
         res.status(201);
         // res.json({
@@ -76,21 +85,34 @@ const loginUser = asyncHandler(async (req, res) => {
     }
     const user = await User.findOne({ email });
     if (user && (await bcrypt.compare(password, user.password))) {
-        const accessToken = await generateJwtToken(user.username, user.email, user._id, 0, {})
-        if (accessToken) {
+
+        let accessToken = user.token;
+        if (!accessToken) {
+            const data = {
+                type: "user"
+            }
+            accessToken = await generateJwtToken(user.username, user.email, user._id, 0, data)
+            await User.findByIdAndUpdate(
+                user.id,
+                { token: accessToken },
+                { new: true }
+            );
+
+            if (!accessToken) {
+                res.status(500);
+                throw new Error("Some things went worong , Please try again")
+            }
 
 
-            res.status(200)
-            res.json({
-
-                "msg": "login Successfull",
-                "token": accessToken,
-            })
         }
-        else {
-            res.status(500);
-            throw new Error("Some things went worong , Please try again")
-        }
+
+        res.status(200)
+        res.json({
+
+            "msg": "login Successfull",
+            "token": accessToken,
+        })
+
     }
     else {
         res.status(401);
@@ -117,9 +139,9 @@ const currentUser = asyncHandler(async (req, res) => {
 //@access Protected  
 
 const sendVerificationOTP = asyncHandler(async (req, res) => {
-    console.log("req " , req.user.id)
+    console.log("req ", req.user.id)
     res.status(200)
-    const isSentVerifyMail = await sentVerifyMail(req. user.id)
+    const isSentVerifyMail = await sentVerifyMail(req.user.id)
     res.json({
         "msg": "Verification email send successful"
     })
@@ -133,18 +155,18 @@ const sendVerificationOTP = asyncHandler(async (req, res) => {
 const validateUserOTP = asyncHandler(async (req, res) => {
 
     const code = req.query.code
-    let BearerToken= req.headers.Authorization || req.headers.authorization||req.query.token
-    if(BearerToken && BearerToken.startsWith("Bearer")){
+    let BearerToken = req.headers.Authorization || req.headers.authorization || req.query.token
+    if (BearerToken && BearerToken.startsWith("Bearer")) {
         token = BearerToken.split(" ")[1];
     }
 
- 
 
 
 
-     
+
+
     res.status(200)
- 
+
     res.json({
         "msg": "Verification email send successful",
         "user": req.user,
@@ -164,31 +186,7 @@ const validateUserOTP = asyncHandler(async (req, res) => {
 // })
 
 
-const generateJwtToken = asyncHandler(async (_username, _email, _id, time, data) => {
-    const jwtToken = jwt.sign({
-        user: {
-            username: _username,
-            email: _email,
-            id: _id,
-            data,
-        },
-    },
-        process.env.ACCESS_TOKEN_SECRT,
-        {
-            expiresIn: time !== 0 ? time : 60 * 60 * 24 * 30 * 12,
 
-
-
-        },
-
-
-    )
-
-
-    console.log(jwtToken)
-    return jwtToken;
-
-})
 // // send verify email 
 
 
@@ -206,6 +204,7 @@ const sentVerifyMail = asyncHandler(async (user_id) => {
     const data = {
         verification_code_id: verficationCode.id,
         code: code,
+        type: "otp"
 
     }
     const accessToken = await generateJwtToken(user.username, user.email, user._id, 3600, data)
@@ -225,8 +224,8 @@ const sentVerifyMail = asyncHandler(async (user_id) => {
 
 
     await sentEMail({
-        "body": emailBodyHtml , 
-        "to" : user.email,
+        "body": emailBodyHtml,
+        "to": user.email,
         "subject": "Verification Email",
 
     })
@@ -280,10 +279,34 @@ const sentEMail = asyncHandler(async (data) => {
 
 
 
+const generateJwtToken = asyncHandler(async (_username, _email, _id, time, data) => {
+    const jwtToken = jwt.sign({
+        user: {
+            username: _username,
+            email: _email,
+            id: _id,
+            type: data.type,
+            data,
+        },
+    },
+        process.env.ACCESS_TOKEN_SECRT,
+        {
+            expiresIn: time !== 0 ? time : 60 * 60 * 24 * 30 * 12,
+        },
+
+
+    )
+
+
+    console.log(jwtToken)
+    return jwtToken;
+
+})
 
 
 
 
 
 
-module.exports = { registerUser, loginUser, currentUser, sendVerificationOTP,validateUserOTP };
+
+module.exports = { registerUser, loginUser, currentUser, sendVerificationOTP, validateUserOTP };

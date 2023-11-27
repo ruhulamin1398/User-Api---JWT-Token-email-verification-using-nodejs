@@ -27,12 +27,19 @@ app.get('/hi', AsyncHandler(async(req,res)=>{
 }));
 // for no production only , please remove before deploy
 app.get('/clean-data', AsyncHandler(async(req,res)=>{
-   
   
   const prevUser = await User.find({});
   await User.deleteMany({});
   const users = await User.find({});
- res.json({ "msg" : "All users was deleted ", "users": users })
+ res.json({ "msg" : "All users was deleted ", "users": users, "prevUser":prevUser })
+
+}));
+
+app.get('/users', AsyncHandler(async(req,res)=>{
+
+  const users = await User.find({});
+  
+ res.json({ users})
 
 }));
 
