@@ -122,8 +122,54 @@ const loginUser = asyncHandler(async (req, res) => {
 })
 
 
-//@des login user 
-//@route POST /api/v1/users/login
+//@des login udate token 
+//@route POST /api/v1/users/update-user-token
+//@access public 
+
+const updateUserToken = asyncHandler(async (req, res) => {
+    const { email } = req.user;
+   
+    const user = await User.findOne({ email });
+  
+
+    
+        if (user) {
+            const data = {
+                type: "user"
+            }
+            accessToken = await generateJwtToken(user.username, user.email, user._id, 0, data)
+            await User.findByIdAndUpdate(
+                user.id,
+                { token: accessToken },
+                { new: true }
+            );
+
+            if (!accessToken) {
+                res.status(500);
+                throw new Error("Some things went worong , Please try again")
+            }
+
+
+        }
+
+        res.status(200)
+        res.json({
+
+            "msg": "Token update Successful",
+            "token": accessToken,
+        })
+
+ 
+  
+
+})
+
+
+
+
+
+//@des current user 
+//@route POST /api/v1/users/currentuser
 //@access public 
 
 const currentUser = asyncHandler(async (req, res) => {
@@ -309,4 +355,4 @@ const generateJwtToken = asyncHandler(async (_username, _email, _id, time, data)
 
 
 
-module.exports = { registerUser, loginUser, currentUser, sendVerificationOTP, validateUserOTP };
+module.exports = { registerUser, loginUser, currentUser, sendVerificationOTP, validateUserOTP,updateUserToken };
