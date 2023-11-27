@@ -14,7 +14,7 @@ const sentEMail = expressAsyncHandler(async (data) => {
             pass: process.env.SMTP_PASSWORD,
         }
     })
-    console.log(tranporter)
+    // console.log(tranporter)
 
 
     const mailOptions = {

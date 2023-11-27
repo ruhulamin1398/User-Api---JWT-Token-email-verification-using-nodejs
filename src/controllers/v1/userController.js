@@ -3,7 +3,7 @@ const User = require("../../models/userModel")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const nodemailer = require("nodemailer")
-const verificationCode = require("../../models/verificationCodeModel")
+const VerificationCode = require("../../models/verificationCodeModel")
 const { sentEMail } = require("./mailSenderController")
 
 
@@ -35,27 +35,32 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
         password: hashedPassword,
     })
-    if (user) {
 
+    if (user) {
+        console.log("verify email sending!!!", user.id)
         const isSentVerifyMail = await sentVerifyMail(user.id)
+        console.log("verify email send done !!!")
         const data = {
             type: "user"
         }
 
         const accessToken = await generateJwtToken(user.username, user.email, user._id, 0, data);
 
-        await User.findByIdAndUpdate(
-            user.id,
-            { token: accessToken },
-            { new: true }
-        );
+        try {
+            await User.findByIdAndUpdate(
+                user.id,
+                { token: accessToken },
+                { new: true }
+            );
+        }
+        catch (err) {
+            res.status(500);
+            throw new Error("Some things went worong , Please try again")
+
+        }
 
         res.status(201);
-        // res.json({
-        //     _id: user.id , 
-        //     _email: user.email,
-        //     username :  user.username
-        // })
+
         res.json({
             "msg": "Account Created Successful. Please verify your Email",
             "token": accessToken,
@@ -249,48 +254,67 @@ const verifyUserOtpToken = asyncHandler(async (req, res) => {
     }
 
 
-    // console.log("user id ", user_id)
-    const verficationData = await verificationCode.findOne({ user_id }).sort({ createdAt: -1 }).limit(1);
+    const verficationData = await VerificationCode.findOne({ user_id }).sort({ createdAt: -1 }).limit(1);
+    if(!verficationData){
+        
+        res.status(401)
 
-    let BearerToken = req.query.token.split(" ")[1]
-    let status= 0;
-    // res.status(200)
-    // res.json({BearerToken, verficationData})
-    if (BearerToken && BearerToken ==  verficationData.token) {
+        res.json({
+            "msg": "Invalid code !!",
+
+        })
+    }
+
+    const  codeFromDatabase = verficationData.verification_code
+    const codeFromRequest= req.body.code
+    const   BearerToken = req.query.token
+
+    let status = 0;
+
+     
+ 
+    if (BearerToken && BearerToken.startsWith("Bearer") ) {
+        let  token = BearerToken.split(" ")[1];
+        if(token== verficationData.token)
+
         status = 1;
-    } else if (verficationData.verification_code == req.body.code) {
+    } else if (codeFromDatabase && codeFromDatabase == req.body.code) {
+      
         status = 1;
     }
- 
 
-    if(status){
-        try{
+
+    if (status) {
+        try {
             await User.findByIdAndUpdate(
                 user.id,
                 { is_verified: true },
                 { new: true }
             );
+            await VerificationCode.deleteOne({ _id: verficationData._id });
+
+
             res.status(200);
             res.json({
                 "msg": "User is Activated",
 
             })
-            
-        }catch(err){ 
+
+        } catch (err) {
             res.status(500);
             throw new Error("Some things went worong , Please try again2")
         }
-       
+
 
     }
-    else{ 
+    else {
         res.status(500);
         throw new Error("Some things went worong , Please try again3")
 
     }
 
 
-    
+
 
 
 
@@ -317,10 +341,17 @@ const verifyUserOtpToken = asyncHandler(async (req, res) => {
 
 const sentVerifyMail = asyncHandler(async (user_id) => {
 
-    // console.log("hello i'm here ")
+    // console.log("hello i'm here ", user_id)
     const user = await User.findById(user_id)
-    // console.log(user)
+    console.log(user)
     const code = Math.floor(1000 + Math.random() * 9000)
+    console.log("code is ", code)
+
+    const verficationCode = await VerificationCode.create({
+        user_id: user.id,
+        verification_code: code,
+
+    })
 
     const data = {
         verification_code_id: verficationCode.id,
@@ -328,14 +359,34 @@ const sentVerifyMail = asyncHandler(async (user_id) => {
         type: "otp"
 
     }
-    const accessToken = await generateJwtToken(user.username, user.email, user._id, 3600, data)
-    // console.log(accessToken)
+    console.log("data  ",data)
 
-    const verficationCode = await verificationCode.create({
-        user_id: user.id,
-        verification_code: code,
-        token: accessToken
-    })
+    console.log("generting token...... ",)
+    let accessToken;
+    try{
+        accessToken= await generateJwtToken(user.username, user.email, user._id, 3600, data)
+    } 
+    catch(err){
+        console.log(err)
+    }
+
+    console.log("generated access token ",accessToken)
+
+
+
+    
+    try {
+        await VerificationCode.findByIdAndUpdate(
+            verficationCode.id,
+            { token: accessToken },
+            { new: true }
+        );
+       
+
+    } catch (err) {
+        console.log(err)
+    }
+
 
 
 
@@ -377,6 +428,7 @@ const sentVerifyMail = asyncHandler(async (user_id) => {
 
 
 const generateJwtToken = asyncHandler(async (_username, _email, _id, time, data) => {
+    console.log("generating jwt token")
     const jwtToken = jwt.sign({
         user: {
             username: _username,
