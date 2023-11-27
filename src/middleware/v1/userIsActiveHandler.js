@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const User = require("../models/userModel")
+const User = require("../../models/userModel")
 
 const checkUserIsActive = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;

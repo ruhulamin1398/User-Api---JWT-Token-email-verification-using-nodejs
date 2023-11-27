@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require('express');
 const app = express();
 require("./db/conn")
-const errorHandler = require("./middleware/errorHandler");
+const errorHandler = require("./middleware/v1/errorHandler");
 
 
 // const listEndpoints = require('express-list-endpoints');
@@ -10,8 +10,8 @@ const errorHandler = require("./middleware/errorHandler");
 
 
 
-const userRoute = require("./routers/userRoutes");
-const contactRoutes = require("./routers/contactRoutes"); 
+const userRoute = require("./routers/v1/userRoutes");
+const contactRoutes = require("./routers/v1/contactRoutes"); 
 const AsyncHandler = require("express-async-handler");
 const User = require("./models/userModel");
 

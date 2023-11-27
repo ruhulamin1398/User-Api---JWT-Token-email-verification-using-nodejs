@@ -5,9 +5,9 @@ const {
   loginUser,
   validateUserOTP,
   sendVerificationOTP,
-} = require("../controllers/userController");
-const validateToken = require("../middleware/validateTokenHandler");
-const checkUserIsActive = require("../middleware/userIsActiveHandler");
+} = require("../../controllers/v1/userController");
+const validateToken = require("../../middleware/v1/validateTokenHandler");
+const checkUserIsActive = require("../../middleware/v1/userIsActiveHandler");
 
 const router = express.Router();
 
