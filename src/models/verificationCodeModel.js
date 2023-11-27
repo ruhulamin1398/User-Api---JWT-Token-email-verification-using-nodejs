@@ -12,6 +12,10 @@ const verificationCodeSchema = mongoose.Schema(
     type: {
       type: String,
       default: "user",
+    },    
+    token: {
+      type: String,
+      default: "",
     },
     
     verification_code: {

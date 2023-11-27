@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const nodemailer = require("nodemailer")
 const verificationCode = require("../../models/verificationCodeModel")
+const { sentEMail } = require("./mailSenderController")
 
 
 //@desc Register a user 
@@ -173,16 +174,17 @@ const updateUserToken = asyncHandler(async (req, res) => {
 //@access public 
 
 const currentUser = asyncHandler(async (req, res) => {
- 
+
     try {
-        
-        const email= req.user.email;
+
+        const email = req.user.email;
         const user = await User.findOne({ email });
-       
-        
+
+
         const id = user._id;
         const username = user.username;
-           
+        const is_verified = user.is_verified
+
 
         res.status(200)
 
@@ -191,6 +193,7 @@ const currentUser = asyncHandler(async (req, res) => {
             id,
             username,
             email,
+            is_verified
         })
 
     }
@@ -222,19 +225,76 @@ const reSendVerificationOTP = asyncHandler(async (req, res) => {
 //@access Protected  
 
 const verifyUserOtpToken = asyncHandler(async (req, res) => {
+    const user_id = req.user.id;
+    // console.log("user id ", user_id)
 
-    const code = req.query.code
-    let BearerToken = req.headers.Authorization || req.headers.authorization || req.query.token
-    if (BearerToken && BearerToken.startsWith("Bearer")) {
-        token = BearerToken.split(" ")[1];
+    let user = {}
+    try {
+        user = await User.findById(user_id)
+        if (user.is_verified) {
+
+            res.status(200)
+
+            res.json({
+                "msg": "User Already Activated",
+
+            })
+
+        }
+    }
+    catch (err) {
+        res.status(500);
+        throw new Error(err)
+
     }
 
-    res.status(200)
 
-    res.json({
-        "msg": "Verification email send successful",
-        "user": req.user,
-    })
+    // console.log("user id ", user_id)
+    const verficationData = await verificationCode.findOne({ user_id }).sort({ createdAt: -1 }).limit(1);
+
+    let BearerToken = req.query.token.split(" ")[1]
+    let status= 0;
+    // res.status(200)
+    // res.json({BearerToken, verficationData})
+    if (BearerToken && BearerToken ==  verficationData.token) {
+        status = 1;
+    } else if (verficationData.verification_code == req.body.code) {
+        status = 1;
+    }
+ 
+
+    if(status){
+        try{
+            await User.findByIdAndUpdate(
+                user.id,
+                { is_verified: true },
+                { new: true }
+            );
+            res.status(200);
+            res.json({
+                "msg": "User is Activated",
+
+            })
+            
+        }catch(err){ 
+            res.status(500);
+            throw new Error("Some things went worong , Please try again2")
+        }
+       
+
+    }
+    else{ 
+        res.status(500);
+        throw new Error("Some things went worong , Please try again3")
+
+    }
+
+
+    
+
+
+
+
 
 })
 
@@ -257,14 +317,11 @@ const verifyUserOtpToken = asyncHandler(async (req, res) => {
 
 const sentVerifyMail = asyncHandler(async (user_id) => {
 
-    console.log("hello i'm here ")
+    // console.log("hello i'm here ")
     const user = await User.findById(user_id)
-    console.log(user)
+    // console.log(user)
     const code = Math.floor(1000 + Math.random() * 9000)
-    const verficationCode = await verificationCode.create({
-        user_id: user.id,
-        verification_code: code,
-    })
+
     const data = {
         verification_code_id: verficationCode.id,
         code: code,
@@ -272,70 +329,46 @@ const sentVerifyMail = asyncHandler(async (user_id) => {
 
     }
     const accessToken = await generateJwtToken(user.username, user.email, user._id, 3600, data)
-    console.log(accessToken)
+    // console.log(accessToken)
+
+    const verficationCode = await verificationCode.create({
+        user_id: user.id,
+        verification_code: code,
+        token: accessToken
+    })
+
+
 
 
     const emailBodyHtml = `
-    <h1>Verification Email</h1>
+    <H1>Verification code : ${code}</H1>
     <p>Click the button below to verify your account:</p>
-    <a style="display: inline-block; background-color: blue; color: white; padding: 10px; border: 1px solid;" href="${process.env.HOST}/verify-user-otp-token?id=${user_id}&&token=Bearer ${accessToken}&&code=${code}">Verify Now</a>
+    <a target="_blank" style="display: inline-block; background-color: blue; color: white; padding: 10px; border: 1px solid;" href="${process.env.HOST}/users/verify-user-otp-token?id=${user_id}&&token=Bearer ${accessToken}">Verify Now</a>
 
     <p>Alternatively, you can copy and paste the following link into your browser:</p>
+    <pre>${process.env.HOST}/users/verify-user-otp-token?id=${user_id}&&token=Bearer ${accessToken} </pre>
     
 `;
 
 
 
+    try {
+        await sentEMail({
+            "body": emailBodyHtml,
+            "to": user.email,
+            "subject": "Verification Email",
 
-    await sentEMail({
-        "body": emailBodyHtml,
-        "to": user.email,
-        "subject": "Verification Email",
-
-    })
-
-
-})
-
-
-const sentEMail = asyncHandler(async (data) => {
-    console.log("data :  ", data)
-
-
-
-    const tranporter = nodemailer.createTransport({
-        service: 'gmail',
-        secure: false,
-
-        auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASSWORD,
-        }
-    })
-    console.log(tranporter)
-
-
-
-    const mailOptions = {
-        from: process.env.SMTP_USER,
-        to: data.to,
-        subject: data.subject,
-        html: data.body
+        })
     }
-    tranporter.sendMail(mailOptions, function (err, info) {
-        if (err) {
-            console.log(err)
-        }
-        else {
-            console.log("email has been send", info.response)
-        }
-    })
-
-
+    catch (err) {
+        console.log(err)
+    }
 
 
 
 })
+
+
 
 
 
