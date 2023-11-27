@@ -9,7 +9,7 @@
 ///Request 
 
 GET /clean-data HTTP/1.1
-Host: https://v1-doctor-app-api-f99762d9291a.herokuapp.com
+Host: localhost:5001
 
 ```
 
@@ -19,8 +19,7 @@ Host: https://v1-doctor-app-api-f99762d9291a.herokuapp.com
     status:200
 
 {
-    "msg": "All users was deleted ",
-    "users": []
+    "msg": "All data was deleted "
 }
 
 ```
@@ -33,13 +32,13 @@ Host: https://v1-doctor-app-api-f99762d9291a.herokuapp.com
 ///Request 
 
 POST /api/v1/users/register HTTP/1.1
-Host: https://v1-doctor-app-api-f99762d9291a.herokuapp.com
+Host: localhost:5001
 Content-Type: application/json
-Content-Length: 107
+Content-Length: 95
 
 {
-    "username": "monkey",
-    "email": "a6b16965640bb3@crankymonkey.info",
+    "username": "hello",
+    "email": "tecado6359@nasmis.com",
     "password": "123234"
 }
 ```
@@ -51,7 +50,7 @@ Content-Length: 107
 
 {
     "msg": "Account Created Successful. Please verify your Email",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoibW9ua2V5IiwiZW1haWwiOiJhNmIxNjk2NTY0MGJiM0BjcmFua3ltb25rZXkuaW5mbyIsImlkIjoiNjU2NDBjYThmM2VhNjBkYjkwMzEzMzQ4IiwiZGF0YSI6e319LCJpYXQiOjE3MDEwNTU2NTYsImV4cCI6MTczMjE1OTY1Nn0.7BIOfOw1wN9rD2Lqr3bopik-Zr2zILHDTgfvOWzc4y0"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoiaGVsbG8iLCJlbWFpbCI6InRlY2FkbzYzNTlAbmFzbWlzLmNvbSIsImlkIjoiNjU2NDgyZGY3MzBlOGEzYzBiY2I0OGIyIiwidHlwZSI6InVzZXIiLCJkYXRhIjp7InR5cGUiOiJ1c2VyIn19LCJpYXQiOjE3MDEwODU5MTksImV4cCI6MTczMjE4OTkxOX0.-sUYaFquKo6l5g0AuSUWV45AVjpYS-zBBOqm6rPXqqQ"
 }
 ```
 
@@ -65,12 +64,12 @@ Content-Length: 107
 ///Request 
 
 POST /api/v1/users/login HTTP/1.1
-Host: https://v1-doctor-app-api-f99762d9291a.herokuapp.com
+Host: localhost:5001
 Content-Type: application/json
-Content-Length: 78
+Content-Length: 70
 
 { 
-    "email": "a6b16965640bb3@crankymonkey.info",
+    "email": "tecado6359@nasmis.com",
     "password": "123234"
 }
 ```
@@ -82,10 +81,35 @@ Content-Length: 78
 
 {
     "msg": "login Successfull",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoibW9ua2V5IiwiZW1haWwiOiJhNmIxNjk2NTY0MGJiM0BjcmFua3ltb25rZXkuaW5mbyIsImlkIjoiNjU2NDBjYThmM2VhNjBkYjkwMzEzMzQ4IiwiZGF0YSI6e319LCJpYXQiOjE3MDEwNTc3NTksImV4cCI6MTczMjE2MTc1OX0.bNOUgKQg5Tgl1NX-vlG4d7SRA1syHEHQ-9N0PE3SIfo"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoiaGVsbG8iLCJlbWFpbCI6InRlY2FkbzYzNTlAbmFzbWlzLmNvbSIsImlkIjoiNjU2NDgyZGY3MzBlOGEzYzBiY2I0OGIyIiwidHlwZSI6InVzZXIiLCJkYXRhIjp7InR5cGUiOiJ1c2VyIn19LCJpYXQiOjE3MDEwODU5MTksImV4cCI6MTczMjE4OTkxOX0.-sUYaFquKo6l5g0AuSUWV45AVjpYS-zBBOqm6rPXqqQ"
 }
 ```
 
+
+
+
+
+
+### Update user token 
+
+```http
+///Request 
+
+PUT /api/v1/users/update-user-token HTTP/1.1
+Host: localhost:5001
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoiaGVsbG8iLCJlbWFpbCI6InRlY2FkbzYzNTlAbmFzbWlzLmNvbSIsImlkIjoiNjU2NDgzYjE3MzBlOGEzYzBiY2I0OGM3IiwidHlwZSI6InVzZXIiLCJkYXRhIjp7InR5cGUiOiJ1c2VyIn19LCJpYXQiOjE3MDEwODYxMzAsImV4cCI6MTczMjE5MDEzMH0.rss96BjyuY6elHnSwAOFQUB3RkRUxJdZPiYLjtuLuZI
+```
+
+
+```http
+///Response 
+    status:200
+
+{
+    "msg": "Token update Successful",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoiaGVsbG8iLCJlbWFpbCI6InRlY2FkbzYzNTlAbmFzbWlzLmNvbSIsImlkIjoiNjU2NDgzYjE3MzBlOGEzYzBiY2I0OGM3IiwidHlwZSI6InVzZXIiLCJkYXRhIjp7InR5cGUiOiJ1c2VyIn19LCJpYXQiOjE3MDEwODYzODcsImV4cCI6MTczMjE5MDM4N30._5EsDaeyT-C2oc6MTNKlrv3xKZ6CnSLu4h6Ds7Wee9Q"
+}
+```
 
 
 
@@ -96,8 +120,8 @@ Content-Length: 78
 ///Request 
 
 GET /api/v1/users/current/ HTTP/1.1
-Host: v1-doctor-app-api-f99762d9291a.herokuapp.com
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoibW9ua2V5IiwiZW1haWwiOiJhNmIxNjk2NTY0MGJiM0BjcmFua3ltb25rZXkuaW5mbyIsImlkIjoiNjU2NDBjYThmM2VhNjBkYjkwMzEzMzQ4IiwiZGF0YSI6e319LCJpYXQiOjE3MDEwNTc3NTksImV4cCI6MTczMjE2MTc1OX0.bNOUgKQg5Tgl1NX-vlG4d7SRA1syHEHQ-9N0PE3SIfo
+Host: localhost:5001
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoiaGVsbG8iLCJlbWFpbCI6InRlY2FkbzYzNTlAbmFzbWlzLmNvbSIsImlkIjoiNjU2NDgyZGY3MzBlOGEzYzBiY2I0OGIyIiwidHlwZSI6InVzZXIiLCJkYXRhIjp7InR5cGUiOiJ1c2VyIn19LCJpYXQiOjE3MDEwODU5MTksImV4cCI6MTczMjE4OTkxOX0.-sUYaFquKo6l5g0AuSUWV45AVjpYS-zBBOqm6rPXqqQ
 ```
 
 
@@ -106,12 +130,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuY
     status:200
 
 {
-
-    "username": "monkey",
-    "email": "a6b16965640bb3@crankymonkey.info",
-    "id": "65640ca8f3ea60db90313348",
-    "data": {}
-
+    "id": "656482df730e8a3c0bcb48b2",
+    "username": "hello",
+    "email": "tecado6359@nasmis.com",
+    "is_verified": false
 }
 ```
 
@@ -125,9 +147,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuY
 ```http
 ///Request 
 
-GET /api/v1/users/resend-verification-email HTTP/1.1
-Host: https://v1-doctor-app-api-f99762d9291a.herokuapp.com
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoibW9ua2V5IiwiZW1haWwiOiJhNmIxNjk2NTY0MGJiM0BjcmFua3ltb25rZXkuaW5mbyIsImlkIjoiNjU2NDBjYThmM2VhNjBkYjkwMzEzMzQ4IiwiZGF0YSI6e319LCJpYXQiOjE3MDEwNTU2NTYsImV4cCI6MTczMjE1OTY1Nn0.7BIOfOw1wN9rD2Lqr3bopik-Zr2zILHDTgfvOWzc4y0
+POST /api/v1/users/resend-verification-email HTTP/1.1
+Host: localhost:5001
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoiaGVsbG8iLCJlbWFpbCI6InRlY2FkbzYzNTlAbmFzbWlzLmNvbSIsImlkIjoiNjU2NDgyZGY3MzBlOGEzYzBiY2I0OGIyIiwidHlwZSI6InVzZXIiLCJkYXRhIjp7InR5cGUiOiJ1c2VyIn19LCJpYXQiOjE3MDEwODU5MTksImV4cCI6MTczMjE4OTkxOX0.-sUYaFquKo6l5g0AuSUWV45AVjpYS-zBBOqm6rPXqqQ
 
 ```
 
@@ -147,13 +169,20 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuY
 
 
 
-### Verify OTP 
+### Verify OTP using code - call from app
 
 ```http
 ///Request 
 
-GET /api/v1/users/verify-otp-token?token=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoic2Fnb3IyMyIsImVtYWlsIjoidGV0YXBhNzA0N0BreGdpZi5jb20iLCJpZCI6IjY1NjAyZDBjNWEyZTM4MmQ2OWVhZmZmYiIsImRhdGEiOnt9fSwiaWF0IjoxNzAwODA3MDQ3LCJleHAiOjE3MzE5MTEwNDd9.3ttU9Dqq9i7QGqs05wkARRlHdlEEvLHTU-o2r5eIah8 HTTP/1.1
-Host: https://v1-doctor-app-api-f99762d9291a.herokuapp.com
+GET /api/v1/users/verify-user-otp-token HTTP/1.1
+Host: localhost:5001
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoiaGVsbG8iLCJlbWFpbCI6InRlY2FkbzYzNTlAbmFzbWlzLmNvbSIsImlkIjoiNjU2NDdjNjM4ZWQ3MjczNjk4MTkxMzUyIiwidHlwZSI6InVzZXIiLCJkYXRhIjp7InR5cGUiOiJ1c2VyIn19LCJpYXQiOjE3MDEwODQyNTksImV4cCI6MTczMjE4ODI1OX0.Bl3C5v9bvXYrdJjqlV3ihKsJqmpsNIq_CwG6EXvPJbo
+Content-Length: 21
+
+{
+    "code":5665
+}
 
 ```
 
@@ -164,11 +193,36 @@ Host: https://v1-doctor-app-api-f99762d9291a.herokuapp.com
 
 
 {
-    "msg": "Verification email send successful"
+    "msg": "User is Activated"
 }
 
 ```
 
+
+
+
+
+### Verify OTP using token - call from Email Link
+
+```http
+///Request 
+
+GET /api/v1/users/verify-user-otp-token?id=656454226aeb13545a52d0f8&null=null&token=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoiaGVsbG8iLCJlbWFpbCI6ImJpbml3bzE4MTBAbWFpbm9qLmNvbSIsImlkIjoiNjU2NDU0MjI2YWViMTM1NDVhNTJkMGY4IiwidHlwZSI6Im90cCIsImRhdGEiOnsidmVyaWZpY2F0aW9uX2NvZGVfaWQiOiI2NTY0NTZlODJhNTk1NDJlNzJjNDI0ZWEiLCJjb2RlIjo0NTI0LCJ0eXBlIjoib3RwIn19LCJpYXQiOjE3MDEwNzQ2NjQsImV4cCI6MTcwMTA3ODI2NH0.4GSM7T4UkLYQjhgUuvmTzXyjE-q2uit3DZDeu6htU-s HTTP/1.1
+Host: localhost:5001
+
+```
+
+
+```http
+///Response 
+    status:200
+
+
+{
+    "msg": "User is Activated"
+}
+
+```
 
 
 
