@@ -173,13 +173,16 @@ const updateUserToken = asyncHandler(async (req, res) => {
 //@access public 
 
 const currentUser = asyncHandler(async (req, res) => {
-
-    console.log("status ")
+ 
     try {
+        
+        const email= req.user.email;
         const user = await User.findOne({ email });
-        const id = user.id;
+       
+        
+        const id = user._id;
         const username = user.username;
-        const email = user.email;
+           
 
         res.status(200)
 
@@ -193,18 +196,18 @@ const currentUser = asyncHandler(async (req, res) => {
     }
     catch (err) {
         res.status(401);
-        throw new Error("User is not authorized");
+        throw new Error(err);
     }
 
 
 })
 
 
-//@des send-verification-email
-//@route POST /api/v1/users/send-verification-email
+//@des resend-verification-email
+//@route POST /api/v1/users/resend-verification-email
 //@access Protected  
 
-const sendVerificationOTP = asyncHandler(async (req, res) => {
+const reSendVerificationOTP = asyncHandler(async (req, res) => {
     console.log("req ", req.user.id)
     res.status(200)
     const isSentVerifyMail = await sentVerifyMail(req.user.id)
@@ -214,22 +217,17 @@ const sendVerificationOTP = asyncHandler(async (req, res) => {
 
 })
 
-//@des send-verification-email
-//@route POST /api/v1/users/send-verification-email
+//@des verify-user-otp-token
+//@route POST /api/v1/users/verify-user-otp-token
 //@access Protected  
 
-const validateUserOTP = asyncHandler(async (req, res) => {
+const verifyUserOtpToken = asyncHandler(async (req, res) => {
 
     const code = req.query.code
     let BearerToken = req.headers.Authorization || req.headers.authorization || req.query.token
     if (BearerToken && BearerToken.startsWith("Bearer")) {
         token = BearerToken.split(" ")[1];
     }
-
-
-
-
-
 
     res.status(200)
 
@@ -280,7 +278,7 @@ const sentVerifyMail = asyncHandler(async (user_id) => {
     const emailBodyHtml = `
     <h1>Verification Email</h1>
     <p>Click the button below to verify your account:</p>
-    <a style="display: inline-block; background-color: blue; color: white; padding: 10px; border: 1px solid;" href="${process.env.HOST}/verify?id=${user_id}&&token=Bearer ${accessToken}&&code=${code}">Verify Now</a>
+    <a style="display: inline-block; background-color: blue; color: white; padding: 10px; border: 1px solid;" href="${process.env.HOST}/verify-user-otp-token?id=${user_id}&&token=Bearer ${accessToken}&&code=${code}">Verify Now</a>
 
     <p>Alternatively, you can copy and paste the following link into your browser:</p>
     
@@ -375,4 +373,4 @@ const generateJwtToken = asyncHandler(async (_username, _email, _id, time, data)
 
 
 
-module.exports = { registerUser, loginUser, currentUser, sendVerificationOTP, validateUserOTP, updateUserToken };
+module.exports = { registerUser, loginUser, currentUser, reSendVerificationOTP, verifyUserOtpToken, updateUserToken };
